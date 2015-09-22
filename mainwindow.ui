@@ -66,14 +66,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionCreateSocket"/>
    <addaction name="actionRemoveSocket"/>
   </widget>
-  <action name="actionCreateSocket">
-   <property name="text">
-    <string>CreateSocket</string>
-   </property>
-  </action>
   <action name="actionRemoveSocket">
    <property name="text">
     <string>RemoveSocket</string>
