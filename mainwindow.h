@@ -18,13 +18,9 @@ public:
 
 public slots:
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-    //void on_actionUdpServer_triggered();
-    //void on_actionUdpClient_triggered();
     void on_actionUdpSocket_triggered();
     void on_actionUdpGroup_triggered();
-
-    //void udpServerCreated(QUdpSocket* udpSocket);
-    //void udpClientCreated(QUdpSocket* udpSocket, const QString& peerAddress, const int& peerPort);
+    void on_actionRemoveSocket_triggered();
     void udpSocketCreated(QUdpSocket* udpSocket);
     void multicastCreated(QUdpSocket* udpSocket, const QString& multicastAddress);
     void soketReadyRead(QAbstractSocket* s);

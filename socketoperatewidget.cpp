@@ -153,6 +153,7 @@ void SocketOperateWidget::on_pushButtonSend_clicked()
                 //char c = 0x2;
                 //udpSocket->writeDatagram(&c, 1, QHostAddress(peerAddress), peerPort);
                 udpSocket->writeDatagram(datagram, QHostAddress(peerAddress), peerPort);
+                qDebug() << peerAddress << peerPort;
                 ui->plainTextEdit->clear();
             }
         }
