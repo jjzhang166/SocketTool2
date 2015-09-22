@@ -37,9 +37,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem*)
 {
-    QWidget *w  = current->data(Qt::UserRole).value<QWidget*>();
-    if (w != nullptr)
-        ui->stackedWidget->setCurrentWidget(w);
+    if (current != nullptr)
+    {
+        QWidget *w = current->data(Qt::UserRole).value<QWidget*>();
+        if (w != nullptr)
+            ui->stackedWidget->setCurrentWidget(w);
+    }
+    else
+    {
+        ui->stackedWidget->setCurrentIndex(0);
+    }
 }
 
 void MainWindow::on_actionUdpSocket_triggered()
@@ -49,26 +56,28 @@ void MainWindow::on_actionUdpSocket_triggered()
     w->show();
 }
 
-//void MainWindow::on_actionUdpServer_triggered()
-//{
-//    UdpServerWidget* w = new UdpServerWidget(this);
-//    connect(w, SIGNAL(udpServerCreated(QUdpSocket*)), this, SLOT(udpServerCreated(QUdpSocket*)));
-//    w->show();
-//}
-
-//void MainWindow::on_actionUdpClient_triggered()
-//{
-//    ClientWidget* w = new ClientWidget(QAbstractSocket::UdpSocket, this);
-//    connect(w, SIGNAL(udpClientCreated(QUdpSocket*, const QString&, const int&)), this, SLOT(udpClientCreated(QUdpSocket*, const QString&, const int&)));
-//    w->show();
-//}
-
 void MainWindow::on_actionUdpGroup_triggered()
 {
     MulticastWidget* w = new MulticastWidget(this);
     connect(w, SIGNAL(multicastCreated(QUdpSocket*, const QString&)), this, SLOT(multicastCreated(QUdpSocket*, const QString&)));
     w->show();
     //w->showNormal();
+}
+
+void MainWindow::on_actionRemoveSocket_triggered()
+{
+    QListWidgetItem *current = ui->listWidget->currentItem();
+    if (current != nullptr)
+    {
+        QWidget *w = current->data(Qt::UserRole).value<QWidget*>();
+        if (w != nullptr)
+        {
+            ui->listWidget->removeItemWidget(current);
+            delete current;
+            ui->stackedWidget->removeWidget(w);
+            w->deleteLater();
+        }
+    }
 }
 
 void MainWindow::udpSocketCreated(QUdpSocket *udpSocket)
@@ -81,39 +90,12 @@ void MainWindow::udpSocketCreated(QUdpSocket *udpSocket)
     item->setData(Qt::UserRole, QVariant::fromValue(w));
     ui->listWidget->addItem(item);
     ui->listWidget->setCurrentItem(item);
-    ui->stackedWidget->setCurrentWidget(w);
 }
-
-//void MainWindow::udpServerCreated(QUdpSocket *udpSocket)
-//{
-//    QString str = QString("[UDP Server]-%1:%2").arg(udpSocket->localAddress().toString()).arg(udpSocket->localPort());
-//    SocketOperateWidget *w = new SocketOperateWidget(this);
-//    w->setServerSocket(udpSocket);
-//    ui->stackedWidget->addWidget(w);
-//    QListWidgetItem *item = new QListWidgetItem(str, ui->listWidget);
-//    item->setData(Qt::UserRole, QVariant::fromValue(w));
-//    ui->listWidget->addItem(item);
-//    ui->listWidget->setCurrentItem(item);
-//    //ui->stackedWidget->setCurrentWidget(w);
-//}
-
-//void MainWindow::udpClientCreated(QUdpSocket* udpSocket, const QString& peerAddress, const int& peerPort)
-//{
-//    QString str = QString("[UDP Client]-%1:%2").arg(udpSocket->localAddress().toString()).arg(udpSocket->localPort());
-//    SocketOperateWidget *w = new SocketOperateWidget(this);
-//    w->setClientSocket(udpSocket, peerAddress, peerPort);
-//    ui->stackedWidget->addWidget(w);
-//    QListWidgetItem *item = new QListWidgetItem(str, ui->listWidget);
-//    item->setData(Qt::UserRole, QVariant::fromValue(w));
-//    ui->listWidget->addItem(item);
-//    ui->listWidget->setCurrentItem(item);
-//    //ui->stackedWidget->setCurrentWidget(w);
-//}
 
 void MainWindow::multicastCreated(QUdpSocket *udpSocket, const QString &multicastAddress)
 {
     QString str = QString("[UDP Group]-%1:%2(%3)").arg(udpSocket->localAddress().toString()).arg(udpSocket->localPort()).arg(multicastAddress);
-    SocketOperateWidget *w = new SocketOperateWidget(this);
+    UpdSocketOperateWidget *w = new UpdSocketOperateWidget(this);
     w->setMulticastSocket(udpSocket, multicastAddress);
     ui->stackedWidget->addWidget(w);
     QListWidgetItem *item = new QListWidgetItem(str, ui->listWidget);

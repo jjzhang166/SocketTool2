@@ -16,15 +16,18 @@ public:
     explicit UpdSocketOperateWidget(QWidget *parent = 0);
     ~UpdSocketOperateWidget();
     void setUdpSocket(QUdpSocket* s);
-    void socketError(QAbstractSocket::SocketError);
+    void setMulticastSocket(QUdpSocket* s, const QString &multicastAddress);
 
 public slots:
+    void socketError(QAbstractSocket::SocketError);
     void soketReadyRead();
     void on_pushButtonSend_clicked();
 
 private:
     Ui::UpdSocketOperateWidget *ui;
-    QUdpSocket* socket;
+    QUdpSocket* m_socket;
+    bool m_isMulticast;
+    QHostAddress m_multicastAddress;
 };
 
 #endif // UPDSOCKETOPERATEWIDGET_H

@@ -15,6 +15,7 @@ MulticastWidget::MulticastWidget(QWidget *parent) :
     ui->lineEditPort->setValidator(portValidator);
     ui->lineEditPort->setText("60000");
 
+    ui->comboBox->addItem(tr("AnyIPv4-address"), "");
     QList<QHostAddress>	hostAddressList = QNetworkInterface::allAddresses();
     foreach (QHostAddress address, hostAddressList)
     {
@@ -49,8 +50,9 @@ void MulticastWidget::on_pushButtonOk_clicked()
     if (p != nullptr)
     {
         QUdpSocket* udpSocket = new QUdpSocket(p);
-        if (udpSocket->bind(hostAddress.isEmpty() ? QHostAddress::Any : QHostAddress(hostAddress), port))
+        if (udpSocket->bind(hostAddress.isEmpty() ? QHostAddress::AnyIPv4 : QHostAddress(hostAddress), port))
         {
+            udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 0); // 禁止本机接收
             if (udpSocket->joinMulticastGroup(QHostAddress(multicastAddress)))
             {
                 emit multicastCreated(udpSocket, multicastAddress);
