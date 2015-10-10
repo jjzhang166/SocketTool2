@@ -15,22 +15,28 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     multicastwidget.cpp \
-    socketoperatewidget.cpp \
-    clientwidget.cpp \
     udpsocketwidget.cpp \
-    updsocketoperatewidget.cpp
+    updsocketoperatewidget.cpp \
+    tcpserverwidget.cpp \
+    tcpserveroperatewidget.cpp \
+    tcpsocketwidget.cpp \
+    tcpsocketoperatewidget.cpp
 
 HEADERS  += mainwindow.h \
     multicastwidget.h \
     stdafx.h \
-    socketoperatewidget.h \
-    clientwidget.h \
     udpsocketwidget.h \
-    updsocketoperatewidget.h
+    updsocketoperatewidget.h \
+    tcpserverwidget.h \
+    tcpserveroperatewidget.h \
+    tcpsocketwidget.h \
+    tcpsocketoperatewidget.h
 
 FORMS    += mainwindow.ui \
     multicastwidget.ui \
-    socketoperatewidget.ui \
-    clientwidget.ui \
     udpsocketwidget.ui \
-    updsocketoperatewidget.ui
+    updsocketoperatewidget.ui \
+    tcpserverwidget.ui \
+    tcpserveroperatewidget.ui \
+    tcpsocketwidget.ui \
+    tcpsocketoperatewidget.ui

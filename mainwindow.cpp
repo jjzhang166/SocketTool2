@@ -8,11 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QPushButton *buttonCreateSocket = new QPushButton(tr("CreateSocket"), this);
     QMenu* menuCreateSocket = new QMenu(this);
     QAction* actionTcpServer = new QAction(tr("TCP Server"), this);
+    actionTcpServer->setObjectName(QStringLiteral("actionTcpServer"));
     QAction* actionTcpClient = new QAction(tr("TCP Client"), this);
-    //QAction* actionUdpServer = new QAction(tr("UDP Server"), this);
-    //actionUdpServer->setObjectName(QStringLiteral("actionUdpServer"));
-    //QAction* actionUdpClient = new QAction(tr("UDP Client"), this);
-    //actionUdpClient->setObjectName(QStringLiteral("actionUdpClient"));
+    actionTcpClient->setObjectName(QStringLiteral("actionTcpClient"));
     QAction* actionUdpSocket = new QAction(tr("UDP Socket"), this);
     actionUdpSocket->setObjectName(QStringLiteral("actionUdpSocket"));
     QAction* actionUdpGroup = new QAction(tr("UDP Group"), this);
@@ -20,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->mainToolBar->insertWidget(ui->actionCreateSocket, buttonCreateSocket);
+    ui->mainToolBar->insertWidget(ui->actionRemoveSocket, buttonCreateSocket);
     menuCreateSocket->addAction(actionTcpServer);
     menuCreateSocket->addAction(actionTcpClient);
     //menuCreateSocket->addAction(actionUdpServer);
@@ -47,6 +45,20 @@ void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QLis
     {
         ui->stackedWidget->setCurrentIndex(0);
     }
+}
+
+void MainWindow::on_actionTcpServer_triggered()
+{
+    TcpServerWidget* w = new TcpServerWidget(this);
+    connect(w, SIGNAL(tcpServerCreated(QTcpServer*)), this, SLOT(tcpServerCreated(QTcpServer*)));
+    w->show();
+}
+
+void MainWindow::on_actionTcpClient_triggered()
+{
+    TcpSocketWidget* w = new TcpSocketWidget(this);
+    connect(w, SIGNAL(tcpSocketCreated(QTcpSocket*, const QHostAddress&, const unsigned short&)), this, SLOT(tcpSocketCreated(QTcpSocket*, const QHostAddress&, const unsigned short&)));
+    w->show();
 }
 
 void MainWindow::on_actionUdpSocket_triggered()
@@ -80,6 +92,30 @@ void MainWindow::on_actionRemoveSocket_triggered()
     }
 }
 
+void MainWindow::tcpServerCreated(QTcpServer *tcpServer)
+{
+    QString str = QString("[Tcp Server]-%1:%2").arg(tcpServer->serverAddress().toString()).arg(tcpServer->serverPort());
+    TcpServeroperatewidget *w = new TcpServeroperatewidget(this);
+    w->setTcpServer(tcpServer);
+    ui->stackedWidget->addWidget(w);
+    QListWidgetItem *item = new QListWidgetItem(str, ui->listWidget);
+    item->setData(Qt::UserRole, QVariant::fromValue(w));
+    ui->listWidget->addItem(item);
+    ui->listWidget->setCurrentItem(item);
+}
+
+void MainWindow::tcpSocketCreated(QTcpSocket *tcpSocket, const QHostAddress& peerHost, const unsigned short& port)
+{
+    QString str = QString("[Tcp Client]-%1:%2").arg(peerHost.toString()).arg(port);
+    TcpSocketOperateWidget *w = new TcpSocketOperateWidget(this);
+    w->setTcpSocket(tcpSocket, peerHost, port);
+    ui->stackedWidget->addWidget(w);
+    QListWidgetItem *item = new QListWidgetItem(str, ui->listWidget);
+    item->setData(Qt::UserRole, QVariant::fromValue(w));
+    ui->listWidget->addItem(item);
+    ui->listWidget->setCurrentItem(item);
+}
+
 void MainWindow::udpSocketCreated(QUdpSocket *udpSocket)
 {
     QString str = QString("[UDP Socket]-%1:%2").arg(udpSocket->localAddress().toString()).arg(udpSocket->localPort());
@@ -104,17 +140,3 @@ void MainWindow::multicastCreated(QUdpSocket *udpSocket, const QString &multicas
     ui->listWidget->setCurrentItem(item);
 }
 
-void MainWindow::soketReadyRead(QAbstractSocket *s)
-{
-    QUdpSocket *udpSocket = qobject_cast<QUdpSocket*>(s);
-    if (udpSocket != nullptr)
-    {
-        QByteArray datagram;
-        datagram.resize(udpSocket->pendingDatagramSize());
-        QHostAddress sender;
-        quint16 senderPort;
-        udpSocket->readDatagram(datagram.data(), datagram.size(),
-                                &sender, &senderPort);
-        qDebug() << datagram << sender << senderPort;
-    }
-}

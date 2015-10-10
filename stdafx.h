@@ -9,9 +9,11 @@
 #include <QtWidgets>
 
 #include "multicastwidget.h"
+#include "tcpserverwidget.h"
+#include "tcpsocketwidget.h"
 #include "udpsocketwidget.h"
-#include "clientwidget.h"
-#include "socketoperatewidget.h"
+#include "tcpserveroperatewidget.h"
+#include "tcpsocketoperatewidget.h"
 #include "updsocketoperatewidget.h"
 
 #endif // STDAFX_H
